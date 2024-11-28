@@ -1,12 +1,11 @@
-import React from 'react';
-import './App.css';
+import React from 'react'
+import './App.css'
+import { Navbar } from './layouts/navbar/Navbar';
 
 function App() {
-  return (
-    <div className="App">
-   
-    </div>
+	return (
+    <Navbar/>
   );
 }
 
-export default App;
+export default App
