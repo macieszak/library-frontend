@@ -1,11 +1,15 @@
 import React from 'react'
 import './App.css'
-import { Navbar } from './layouts/navbar/Navbar';
+import { ExploreTopBooks } from './layouts/homepage/ExploreTopBooks'
+import { Navbar } from './layouts/navbar/Navbar'
 
 function App() {
 	return (
-    <Navbar/>
-  );
+		<div>
+			<Navbar />
+			<ExploreTopBooks />
+		</div>
+	)
 }
 
 export default App
