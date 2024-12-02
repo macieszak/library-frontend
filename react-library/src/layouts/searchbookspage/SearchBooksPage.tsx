@@ -12,12 +12,20 @@ export const SearchBooksPage = () => {
 	const [booksPerPage] = useState(3)
 	const [totalAmountOfBooks, settotalAmountOfBooks] = useState(0)
 	const [totalPages, setTotalPages] = useState(0)
+	const [search, setSearch] = useState('')
+	const [searchUrl, setSeatchUrl] = useState('')
 
 	useEffect(() => {
 		const fetchBooks = async () => {
 			const baseUrl: string = 'http://localhost:8080/api/books'
 
-			let url: string = `${baseUrl}?page=${currentPage - 1}&size=${booksPerPage}`
+			let url: string = ``
+
+			if (searchUrl == '') {
+				url = `${baseUrl}?page=${currentPage - 1}&size=${booksPerPage}`
+			} else {
+				url = baseUrl + searchUrl
+			}
 
 			const response = await fetch(url)
 
@@ -29,9 +37,9 @@ export const SearchBooksPage = () => {
 
 			const responseData = responseJson._embedded.books
 
-            settotalAmountOfBooks(responseJson.page.totalElements)
- 
-            setTotalPages(responseJson.page.totalPages)
+			settotalAmountOfBooks(responseJson.page.totalElements)
+
+			setTotalPages(responseJson.page.totalPages)
 
 			const loadedBooks: BookModel[] = []
 
@@ -56,7 +64,7 @@ export const SearchBooksPage = () => {
 			setHttpError(error.message)
 		})
 		window.scrollTo(0, 0)
-	}, [currentPage])
+	}, [currentPage, searchUrl])
 
 	if (isLoading) {
 		return <SpinnerLoading />
@@ -70,13 +78,21 @@ export const SearchBooksPage = () => {
 		)
 	}
 
-    const indexOfLastBook: number = currentPage * booksPerPage;
-    
-    const indexOfFirstBook: number = indexOfLastBook - booksPerPage;
-    
-    let lastItem = booksPerPage * currentPage <= totalAmountOfBooks ? booksPerPage * currentPage : totalAmountOfBooks;
+	const searchHandleChange = () => {
+		if (search === '') {
+			setSeatchUrl('')
+		} else {
+			setSeatchUrl(`/search/findByTitleContaining?title=${search}&page==&size=${booksPerPage}`)
+		}
+	}
 
-    const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+	const indexOfLastBook: number = currentPage * booksPerPage
+
+	const indexOfFirstBook: number = indexOfLastBook - booksPerPage
+
+	let lastItem = booksPerPage * currentPage <= totalAmountOfBooks ? booksPerPage * currentPage : totalAmountOfBooks
+
+	const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
 
 	return (
 		<div>
@@ -85,8 +101,16 @@ export const SearchBooksPage = () => {
 					<div className='row mt-5'>
 						<div className='col-6'>
 							<div className='d-flex'>
-								<input className='form-control me-2' type='search' placeholder='Search' aria-labelledby='Search' />
-								<button className='btn btn-outline-success'>Search</button>
+								<input
+									className='form-control me-2'
+									type='search'
+									placeholder='Search'
+									aria-labelledby='Search'
+									onChange={e => setSearch(e.target.value)}
+								/>
+								<button className='btn btn-outline-success' onClick={() => searchHandleChange()}>
+									Search
+								</button>
 							</div>
 						</div>
 						<div className='col-4'>
@@ -129,17 +153,27 @@ export const SearchBooksPage = () => {
 							</div>
 						</div>
 					</div>
-					<div className='mt-3'>
-						<h5>Number of results: ({totalAmountOfBooks})</h5>
-					</div>
-					<p>{indexOfFirstBook + 1} to {lastItem} of {totalAmountOfBooks} items:</p>
-					{books.map(book => (
-						<SearchBook book={book} key={book.id} />
-					))}
-                    {
-                    totalPages > 1 && 
-                    <Pagination currentPage={currentPage} totalPages={totalPages} paginate={paginate} />
-                    }
+					{totalAmountOfBooks > 0 ? (
+						<>
+							<div className='mt-3'>
+								<h5>Number of results: ({totalAmountOfBooks})</h5>
+							</div>
+							<p>
+								{indexOfFirstBook + 1} to {lastItem} of {totalAmountOfBooks} items:
+							</p>
+							{books.map(book => (
+								<SearchBook book={book} key={book.id} />
+							))}
+						</>
+					) : (
+						<div className='m-5'>
+							<h3>Can't find what you are looking for?</h3>
+							<a type='button' className='btn main-color btn-md px-4 me-md-2 fw-bold text-white' href='#'>
+								Library Services
+							</a>
+						</div>
+					)}
+					{totalPages > 1 && <Pagination currentPage={currentPage} totalPages={totalPages} paginate={paginate} />}
 				</div>
 			</div>
 		</div>
