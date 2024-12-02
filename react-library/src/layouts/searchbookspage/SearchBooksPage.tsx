@@ -10,18 +10,19 @@ export const SearchBooksPage = () => {
 	const [httpError, setHttpError] = useState(null)
 	const [currentPage, setCurrentPage] = useState(1)
 	const [booksPerPage] = useState(3)
-	const [totalAmountOfBooks, settotalAmountOfBooks] = useState(0)
+	const [totalAmountOfBooks, setTotalAmountOfBooks] = useState(0)
 	const [totalPages, setTotalPages] = useState(0)
 	const [search, setSearch] = useState('')
-	const [searchUrl, setSeatchUrl] = useState('')
+	const [searchUrl, setSearchUrl] = useState('')
+	const [categorySelection, setCategorySelection] = useState('Book category')
 
 	useEffect(() => {
 		const fetchBooks = async () => {
 			const baseUrl: string = 'http://localhost:8080/api/books'
 
-			let url: string = ``
+			let url: string = ''
 
-			if (searchUrl == '') {
+			if (searchUrl === '') {
 				url = `${baseUrl}?page=${currentPage - 1}&size=${booksPerPage}`
 			} else {
 				url = baseUrl + searchUrl
@@ -37,8 +38,7 @@ export const SearchBooksPage = () => {
 
 			const responseData = responseJson._embedded.books
 
-			settotalAmountOfBooks(responseJson.page.totalElements)
-
+			setTotalAmountOfBooks(responseJson.page.totalElements)
 			setTotalPages(responseJson.page.totalPages)
 
 			const loadedBooks: BookModel[] = []
@@ -59,6 +59,7 @@ export const SearchBooksPage = () => {
 			setBooks(loadedBooks)
 			setIsLoading(false)
 		}
+
 		fetchBooks().catch((error: any) => {
 			setIsLoading(false)
 			setHttpError(error.message)
@@ -80,16 +81,29 @@ export const SearchBooksPage = () => {
 
 	const searchHandleChange = () => {
 		if (search === '') {
-			setSeatchUrl('')
+			setSearchUrl('')
 		} else {
-			setSeatchUrl(`/search/findByTitleContaining?title=${search}&page==&size=${booksPerPage}`)
+			setSearchUrl(`/search/findByTitleContaining?title=${search}&page=0&size=${booksPerPage}`)
+		}
+	}
+
+	const categoryField = (value: string) => {
+		if (
+			value === 'Classics' ||
+			value === 'Philosophy' ||
+			value === 'Drama' ||
+			value === 'Horror'
+		) {
+			setCategorySelection(value)
+			setSearchUrl(`/search/findByCategory?category=${value}&page=0&size=${booksPerPage}`)
+		} else {
+			setCategorySelection('All')
+			setSearchUrl(`?page=0&size=${booksPerPage}`)
 		}
 	}
 
 	const indexOfLastBook: number = currentPage * booksPerPage
-
 	const indexOfFirstBook: number = indexOfLastBook - booksPerPage
-
 	let lastItem = booksPerPage * currentPage <= totalAmountOfBooks ? booksPerPage * currentPage : totalAmountOfBooks
 
 	const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
@@ -121,32 +135,32 @@ export const SearchBooksPage = () => {
 									id='dropdownMenuButton1'
 									data-bs-toggle='dropdown'
 									aria-expanded='false'>
-									Category
+									{categorySelection}
 								</button>
 								<ul className='dropdown-menu' aria-labelledby='dropdownMenuButton1'>
-									<li>
+									<li onClick={() => categoryField('All')}>
 										<a className='dropdown-item' href='#'>
 											All
 										</a>
 									</li>
-									<li>
+									<li onClick={() => categoryField('Classics')}>
 										<a className='dropdown-item' href='#'>
-											Classics of Literature
+											Classics
 										</a>
 									</li>
-									<li>
+									<li onClick={() => categoryField('Philosophy')}>
 										<a className='dropdown-item' href='#'>
-											Philosophy and Political Thought
+											Philosophy
 										</a>
 									</li>
-									<li>
+									<li onClick={() => categoryField('Drama')}>
 										<a className='dropdown-item' href='#'>
 											Drama
 										</a>
 									</li>
-									<li>
+									<li onClick={() => categoryField('Horror')}>
 										<a className='dropdown-item' href='#'>
-											Horror and Fiction
+											Horror
 										</a>
 									</li>
 								</ul>
