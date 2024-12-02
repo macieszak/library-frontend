@@ -1,3 +1,4 @@
+import { NavLink } from 'react-router-dom'
 import { ReactComponent as BookIcon } from '../../img/book-solid.svg'
 
 export const Navbar = () => {
@@ -5,12 +6,7 @@ export const Navbar = () => {
 		<nav className='navbar navbar-expand-lg navbar-dark main-color py-3'>
 			<div className='container-fluid'>
 				<a className='navbar-brand' href='#'>
-					<BookIcon
-						width={30}
-						height={24}
-						fill='white'
-						className='d-inline-block align-text-top'
-					/>
+					<BookIcon width={30} height={24} fill='white' className='d-inline-block align-text-top' />
 					e-bibliotheca
 				</a>
 				<button
@@ -26,14 +22,14 @@ export const Navbar = () => {
 				<div className='collapse navbar-collapse' id='navbarNavDropdown'>
 					<ul className='navbar-nav'>
 						<li className='nav-item'>
-							<a className='nav-link' href='#'>
+							<NavLink className='nav-link' to='/home'>
 								Home
-							</a>
+							</NavLink>
 						</li>
 						<li className='nav-item'>
-							<a className='nav-link' href='#'>
+							<NavLink className='nav-link' to='/search'>
 								Search Books
-							</a>
+							</NavLink>
 						</li>
 					</ul>
 					<ul className='navbar-nav ms-auto'>
