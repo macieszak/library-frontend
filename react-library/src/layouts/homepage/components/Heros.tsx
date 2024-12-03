@@ -1,4 +1,10 @@
+import { useOktaAuth } from '@okta/okta-react'
+import { Link } from "react-router-dom";
+
 export const Heros = () => {
+
+	const { authState } = useOktaAuth();
+
 	return (
 		<div>
 			<div className='d-none d-lg-block'>
@@ -14,9 +20,12 @@ export const Heros = () => {
 								The library team would love to hear about it! Whether it’s a thrilling adventure, a captivating romance,
 								or a deep dive into history, we’re here to help you discover your next great read.
 							</p>
-							<a className='btn main-color btn-lg text-white' href='#'>
-								Sign up
-							</a>
+                            {authState?.isAuthenticated ? 
+                                <Link type='button' className='btn main-color btn-lg text-white'
+                                    to='search'>Explore top books </Link>
+                                :
+                                <Link className='btn main-color btn-lg text-white' to='/login'>Sign up</Link>
+                            }  
 						</div>
 					</div>
 				</div>
@@ -52,9 +61,12 @@ export const Heros = () => {
 								The library team would love to hear about it! Whether it’s a thrilling adventure, a captivating romance,
 								or a deep dive into history, we’re here to help you discover your next great read.
 							</p>
-							<a className='btn main-color btn-lg text-white' href='#'>
-								Sign up
-							</a>
+                            {authState?.isAuthenticated ? 
+                                <Link type='button' className='btn main-color btn-lg text-white'
+                                    to='search'>Explore top books</Link>
+                                :
+                                <Link className='btn main-color btn-lg text-white' to='/login'>Sign up</Link>
+                        }
 						</div>
 					</div>
 					<div className='m-2'>
